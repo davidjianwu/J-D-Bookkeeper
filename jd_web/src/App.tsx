@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchBooks, Book } from './api/books';
+import { fetchBooks, createBook, Book } from './api/books';
 
 function App() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState<string>("");
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -20,7 +21,13 @@ function App() {
     };
     loadBooks();
   }, []);
-  console.log(books)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    createBook({title: title})
+    e.preventDefault()
+    setTitle("") // clear input
+  }
+
   return (
     <>
       <div>
@@ -34,6 +41,15 @@ function App() {
             ))
           }
         </div>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="enter title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <button type="submit"> Submit </button>
+        </form>
       </div>
     </>
   )

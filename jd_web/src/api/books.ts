@@ -25,14 +25,14 @@ export const fetchBooks = async (): Promise<Book[]> => {
 //   return data;
 // };
 
-// // Create a new user
-// export const createUser = async (user: Omit<User, 'id'>): Promise<User> => {
-//   const response = await fetch(`${API_URL}/users`, {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify(user),
-//   });
-//   if (!response.ok) throw new Error(`Failed to create user: ${response.status}`);
-//   const data: User = await response.json();
-//   return data;
-// };
+// Create a new user
+export const createBook = async (book: {title: string}): Promise<Book> => {
+  const response = await fetch(`${API_URL}/books`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(book),
+  });
+  if (!response.ok) throw new Error(`Failed to create user: ${response.status}`);
+  const data: Book = await response.json();
+  return data;
+};
