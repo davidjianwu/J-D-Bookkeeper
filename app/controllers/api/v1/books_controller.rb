@@ -56,6 +56,8 @@ class Api::V1::BooksController < ApplicationController
   # DELETE /books/1
   def destroy
     @book.destroy!
+
+    render json: { message: "Book deleted" }, status: :ok
   end
 
   private

@@ -5,9 +5,11 @@ type BookProps = {
 
 export const BookItem = ({title, author}: BookProps) => {
     return (
-        <div>
-            <p> {title} </p>
-            <small> by {author} </small>
-        </div>
+        <>
+            <div className="item-container">
+                <p> {title} </p>
+                <small> by {author} </small>
+            </div>
+        </>
     )
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchBooks, createBook, Book } from './api/books';
+import { fetchBooks, createBook, deleteBook, Book } from './api/books';
 import { BookItem } from './components/Book'
 
 function App() {
@@ -9,12 +9,16 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
+  const [submittedBook, setSubmittedBook] = useState<string>("")
+  const [deletedBook, setDeletedBook] = useState<number>("")
 
   useEffect(() => {
+    console.log("useEffect run")
     const loadBooks = async () => {
       try {
         const data = await fetchBooks();   // call the API function
-        setBooks(data);                     // store data in state
+        setBooks(data);
+        console.log(data)                     // store data in state
       } catch (err: any) {
         setError(err.message);              // handle errors
       } finally {
@@ -22,13 +26,20 @@ function App() {
       }
     };
     loadBooks();
-  }, []);
+  }, [submittedBook, deletedBook]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    createBook({title: title, author: author})
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    await createBook({title: title, author: author})
     setTitle("") // clear input
     setAuthor("")
+    setSubmittedBook(title)
+  }
+
+  const handleDelete = async(e: React.FormEvent, bookId: number) => {
+    e.preventDefault()
+    await deleteBook(bookId)
+    setDeletedBook(bookId)
   }
 
   return (
@@ -40,6 +51,8 @@ function App() {
             books.map(book => (
               <div className="book-item-container" key={book.id}>
                 <BookItem title={book.title} author={book.author}/>
+                <button onClick={(e) => {handleDelete(e, book.id)}}>Delete</button>
+                <hr />
               </div>
             ))
           }

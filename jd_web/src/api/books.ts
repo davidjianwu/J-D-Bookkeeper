@@ -33,7 +33,15 @@ export const createBook = async (book: {title: string, author: string}): Promise
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(book),
   });
-  if (!response.ok) throw new Error(`Failed to create user: ${response.status}`);
+  if (!response.ok) throw new Error(`Failed to create book: ${response.status}`);
   const data: Book = await response.json();
   return data;
 };
+
+export const deleteBook = async (id: number): Promise<void> => {
+  const response = await fetch(`${API_URL}/books/${id}`, {
+    method: 'DELETE',
+  })
+  if (!response.ok) throw new Error(`Failed to delete book ${response.status}`);
+  return await response.json()
+}
