@@ -3,10 +3,11 @@ import { API_URL } from '../constants';
 // TypeScript interfaces for typing
 export interface Book {
   id: number;
-  author_id: string;
+  author_id: number;
   title: string;
   pages: string;
   genre: string;
+  author: string;
 }
 
 // Fetch all books
@@ -26,7 +27,7 @@ export const fetchBooks = async (): Promise<Book[]> => {
 // };
 
 // Create a new user
-export const createBook = async (book: {title: string}): Promise<Book> => {
+export const createBook = async (book: {title: string, author: string}): Promise<Book> => {
   const response = await fetch(`${API_URL}/books`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

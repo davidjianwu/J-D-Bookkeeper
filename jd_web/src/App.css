@@ -5,6 +5,19 @@
   text-align: center;
 }
 
-.books-container {
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 20rem;
+  margin: 0 auto;  
+}
 
+.form-container input {
+  padding: 0.5rem;
+  margin: 0.5rem;
+}
+
+.book-item-container {
+  padding: 2px;
 }
