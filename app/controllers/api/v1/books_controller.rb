@@ -3,9 +3,17 @@ class Api::V1::BooksController < ApplicationController
 
   # GET /books
   def index
-    @books = Book.all
+    @books = Book.includes(:author).all
 
-    render json: @books
+    @books_with_author = @books.map do |book|
+      if book.author
+        book.attributes.merge({author: book.author.first_name})
+      else
+        book.attributes.merge({author: nil})
+      end
+    end
+
+    render json: @books_with_author
   end
 
   # GET /books/1
@@ -15,10 +23,22 @@ class Api::V1::BooksController < ApplicationController
 
   # POST /books
   def create
-    @book = Book.new(book_params)
+    new_book_params = book_params
+
+    if params["author"]
+      Author.create(first_name: params["author"])
+    end
+
+    author = Author.find_by(first_name: params["author"])
+
+    if author
+      new_book_params = book_params.merge(author_id: author.id)
+    end
+
+    @book = Book.new(new_book_params.to_h)
 
     if @book.save
-      render json: @book, status: :created, location: @book
+      render json: @book, status: :created, location: api_v1_book_url(@book)
     else
       render json: @book.errors, status: :unprocessable_entity
     end
