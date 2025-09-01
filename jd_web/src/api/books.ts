@@ -45,3 +45,13 @@ export const deleteBook = async (id: number): Promise<void> => {
   if (!response.ok) throw new Error(`Failed to delete book ${response.status}`);
   return await response.json()
 }
+
+export const updateBook = async (id: number, book: {title: string, author: string}): Promise<void> => {
+  const response = await fetch(`${API_URL}/books/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(book)
+  })
+  if (!response.ok) throw new Error(`Failed to update book ${response.status}`);
+  return await response.json()
+}

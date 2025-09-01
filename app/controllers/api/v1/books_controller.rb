@@ -46,7 +46,20 @@ class Api::V1::BooksController < ApplicationController
 
   # PATCH/PUT /books/1
   def update
-    if @book.update(book_params)
+    new_book_params = book_params
+    if params["author"]
+      author = Author.find_by(first_name: params["author"])
+
+      if author
+        new_book_params = book_params.merge(author_id: author.id)
+      else
+        a = Author.create(first_name: params["author"])
+        new_book_params = book_params.merge(author_id: a.id)
+      end
+    end
+
+    if @book.update(new_book_params)
+
       render json: @book
     else
       render json: @book.errors, status: :unprocessable_entity
