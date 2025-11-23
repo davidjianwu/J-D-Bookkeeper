@@ -66,7 +66,7 @@ function App() {
   return (
     <>
       <div>
-        <h1> Welcome to J&D Bookkepper </h1>
+        <h1> Welcome to J&D Bookkeeper </h1>
         <div>
           {
             books.map(book => (
