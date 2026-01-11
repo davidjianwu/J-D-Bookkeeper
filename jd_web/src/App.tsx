@@ -1,23 +1,24 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchBooks, createBook, deleteBook, updateBook, Book } from './api/books';
+import { fetchBooks, createBook, deleteBook, updateBook, Book, EditBook } from './api/books';
 import { BookItem } from './components/Book'
+
+type BookForm = {
+  title: string;
+  author: string;
+}
 
 function App() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [title, setTitle] = useState<string>("");
-  const [author, setAuthor] = useState<string>("");
+  const [form, setForm] = useState<BookForm>({title: "", author: ""})
+  const [editForm, setEditForm] = useState<EditBook>({id: null, title: "", author: ""})
   const [submittedBook, setSubmittedBook] = useState<string>("")
   const [deletedBook, setDeletedBook] = useState<number | null>(null)
   const [updatedBook, setUpdatedBook] = useState<string>("")
-  const [editBookId, setEditBookId] = useState<number | null>(null);
-  const [editTitle, setEditTitle] = useState<string>("");
-  const [editAuthor, setEditAuthor] = useState<string>("");
 
   useEffect(() => {
-    console.log("useEffect run")
     const loadBooks = async () => {
       try {
         const data = await fetchBooks();   // call the API function
@@ -34,10 +35,9 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await createBook({title: title, author: author})
-    setTitle("") // clear input
-    setAuthor("")
-    setSubmittedBook(title)
+    await createBook({title: form.title, author: form.author})
+    setForm({title: "", author: ""})
+    setSubmittedBook(form.title)
   }
 
   const handleDelete = async(e: React.FormEvent, bookId: number) => {
@@ -46,21 +46,27 @@ function App() {
     setDeletedBook(bookId)
   }
 
-  const handleUpdate = async(e: React.FormEvent, bookId: number, book: any) => {
+  const handleUpdate = async(e: React.FormEvent, book: EditBook) => {
     e.preventDefault()
-    await updateBook(bookId, book)
-    setEditBookId(null)
-    setUpdatedBook(`${bookId}${book.title}${book.author}`)
+    await updateBook(book)
+    setEditForm({...editForm, id: null})
+    setUpdatedBook(`${book.id}${book.title}${book.author}`)
   }
 
   const handleOpenEditForm = (book: any) => {
-    if (editBookId === book.id) {
-      setEditBookId(null)
+    if (editForm.id === book.id) {
+      setEditForm({...editForm, id: null})
     } else {
-      setEditBookId(book.id)
-      setEditTitle(book.title)
-      setEditAuthor(book.author)
+      setEditForm({id: book.id, title: book.title, author: book.author})
     }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({...form, [e.target.name]: e.target.value})
+  }
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditForm({...editForm, [e.target.name]: e.target.value})
   }
 
   return (
@@ -74,19 +80,21 @@ function App() {
                 <BookItem title={book.title} author={book.author}/>
                 <button onClick={(e) => {handleDelete(e, book.id)}}>Delete</button>
                 <button onClick={() => handleOpenEditForm(book)}>Edit</button>
-                {editBookId == book.id ? (
-                  <form onSubmit={(e) => {handleUpdate(e, book.id, {title: editTitle, author: editAuthor})}} className="form-container">
+                {editForm.id == book.id ? (
+                  <form onSubmit={(e) => {handleUpdate(e, editForm)}} className="form-container">
                     <input
                       type="text"
                       placeholder="enter title"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
+                      name="title"
+                      value={editForm.title}
+                      onChange={handleEditChange}
                     />
                     <input
                       type="text"
                       placeholder="enter author"
-                      value={editAuthor}
-                      onChange={(e) => setEditAuthor(e.target.value)}
+                      name="author"
+                      value={editForm.author}
+                      onChange={handleEditChange}
                     />
                   <button type="submit"> Submit Edit </button>
                   </form>
@@ -102,14 +110,16 @@ function App() {
           <input
             type="text"
             placeholder="enter title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={form.title}
+            name="title"
+            onChange={handleChange}
           />
           <input
             type="text"
             placeholder="enter author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            value={form.author}
+            name="author"
+            onChange={handleChange}
           />
           <button type="submit"> Submit </button>
         </form>

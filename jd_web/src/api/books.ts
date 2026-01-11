@@ -1,12 +1,18 @@
 import { API_URL } from '../constants';
 
 // TypeScript interfaces for typing
-export interface Book {
+export type Book =  {
   id: number;
   author_id: number;
   title: string;
   pages: string;
   genre: string;
+  author: string;
+}
+
+export type EditBook = {
+  id: number | null;
+  title: string;
   author: string;
 }
 
@@ -46,8 +52,8 @@ export const deleteBook = async (id: number): Promise<void> => {
   return await response.json()
 }
 
-export const updateBook = async (id: number, book: {title: string, author: string}): Promise<void> => {
-  const response = await fetch(`${API_URL}/books/${id}`, {
+export const updateBook = async (book: EditBook): Promise<void> => {
+  const response = await fetch(`${API_URL}/books/${book.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(book)
